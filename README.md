@@ -49,3 +49,12 @@ check:
 
 注意：多个索引，逗号左右不能有空格
 ```
+
+
+## window
+- https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html
+```
+
+C:\green_soft\instantclient_11_2
+add path
+```
