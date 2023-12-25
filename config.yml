@@ -1,0 +1,14 @@
+# 登陆oracle实例
+login:
+  address: "1.1.1.1:1521/orcl"
+  username: "xxx"
+  password: "yyy"
+
+# 检查表是否存在对应索引
+check:
+  - a:
+      - b
+      - c,d
+  - z:
+      - e
+      - f,g
