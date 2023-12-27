@@ -1,28 +1,95 @@
+project_name: goreleaser-zig-cross-compilation
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
-
 before:
   hooks:
     # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
-    # - go generate ./...
-
 builds:
-  - env:
-      - CGO_ENABLED=1
-    main: ./
-    targets:
-      - linux_amd64
-      - linux_arm64
-      - windows_amd64
-      - darwin_amd64
+  - id: goreleaser-zig-cross-compilation-linux-macos
+    goos:
+    - darwin
+    goarch:
+    - amd64
+    #- arm64
+    ldflags:
+    - -s -w
+    flags:
+    - -trimpath
+    - -buildmode=pie
+    env:
+    - CGO_ENABLED=1
+    - >-
+        {{- if eq .Os "darwin" }}
+          {{- if eq .Arch "amd64"}}CC=zig c -target x86_64-macos-none -F{{ .Env.SDK_PATH }}/System/Library/Frameworks{{- end }}
+          {{- if eq .Arch "arm64"}}CC=zig c -target aarch64-macos-none -F{{ .Env.SDK_PATH }}/System/Library/Frameworks{{- end }}
+        {{- end }}
+    - >-
+        {{- if eq .Os "darwin" }}
+          {{- if eq .Arch "amd64"}}CC=zig c++ -target x86_64-macos-none -F{{ .Env.SDK_PATH }}/System/Library/Frameworks{{- end }}
+          {{- if eq .Arch "arm64"}}CC=zig c++ -target aarch64-macos-none -F{{ .Env.SDK_PATH }}/System/Library/Frameworks{{- end }}
+        {{- end }}
+
+  - id: goreleaser-zig-cross-compilation-linux
+    goos:
+    - linux
+    goarch:
+    - amd64
+    - arm64
+    ldflags:
+    - -s -w
+    flags:
+    - -trimpath
+    env:
+    - CGO_ENABLED=1
+    - >-
+        {{- if eq .Os "linux" }}
+          {{- if eq .Arch "amd64" }}CC=zig c -target x86_64-linux-musl{{- end }}
+          {{- if eq .Arch "arm64"}}CC=zig c -target aarch64-linux-musl{{- end }}
+        {{- end }}
+    - >-
+        {{- if eq .Os "linux" }}
+          {{- if eq .Arch "amd64" }}CC=zig c++ -target x86_64-linux-musl{{- end }}
+          {{- if eq .Arch "arm64"}}CC=zig c++ -target aarch64-linux-musl{{- end }}
+        {{- end }}
+
+  - id: goreleaser-zig-cross-compilation-windows
+    goos:
+    - windows
+    goarch:
+    - amd64
+    #- arm64
+    ldflags:
+    - -s -w
+    flags:
+    - -trimpath
+    env:
+    - CGO_ENABLED=1
+    - >-
+        {{- if eq .Os "windows" }}
+          {{- if eq .Arch "amd64" }}CC=zig c -target x86_64-windows-gnu{{- end }}
+          {{- if eq .Arch "arm64"}}CC=zig c -target aarch64-windows-gnu{{- end }}
+        {{- end }}
+    - >-
+        {{- if eq .Os "windows" }}
+          {{- if eq .Arch "amd64" }}CC=zig c++ -target x86_64-windows-gnu{{- end }}
+          {{- if eq .Arch "arm64"}}CC=zig c++ -target aarch64-windows-gnu{{- end }}
+        {{- end }}
+
 archives:
   - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of uname.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
     # use zip for windows archives
     format_overrides:
-      - goos: windows
-        format: zip
+    - goos: windows
+      format: zip
     files:
       - config.yml
       - README.md
