@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	mpset "github.com/deckarep/golang-set"
-	_ "github.com/sijms/go-ora/v2"
+	_ "github.com/godror/godror"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"io"
@@ -29,9 +29,12 @@ var (
 
 // 登陆数据库
 func loginDb() *sql.DB {
-	dsn := fmt.Sprintf("oracle://%s:%s@%s", config.Login.Username, config.Login.Password, config.Login.Address)
+	dsn := "user=" + config.Login.Username + " password=" +
+		config.Login.Password + " connectString=" +
+		//config.Login.Address + " timezone=" + "Asia/Shanghai"
+		config.Login.Address + " timezone=" + "local"
 	//fmt.Println(dsn)
-	client, err := sql.Open("oracle", dsn)
+	client, err := sql.Open("godror", dsn)
 	handleErr(err)
 
 	return client

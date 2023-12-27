@@ -13,6 +13,7 @@ require (
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/godror/knownpb v0.1.1 // indirect
+	github.com/sijms/go-ora/v2 v2.8.3 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
